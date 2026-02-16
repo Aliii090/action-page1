@@ -1,10 +1,6 @@
 {
-  "name": "Grand Bakery",
   "short_name": "Grand Bakery",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#D4AF37",
+  "name": "Grand Bakery & Pastries",
   "icons": [
     {
       "src": "logogrand.png",
@@ -16,5 +12,11 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "dir": "rtl",
+  "lang": "ar"
 }
