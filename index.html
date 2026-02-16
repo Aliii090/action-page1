@@ -1,70 +1,323 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action Required | إجراء مطلوب</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #1c1e21;
-        }
-        .card {
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 450px;
-            width: 90%;
-            text-align: center;
-        }
-        .icon {
-            font-size: 50px;
-            color: #ff4757;
-            margin-bottom: 15px;
-        }
-        h2 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            font-weight: 600;
-        }
-        .divider {
-            height: 1px;
-            background: #e4e6eb;
-            margin: 20px 0;
-        }
-        .english {
-            margin-bottom: 10px;
-        }
-        .arabic {
-            direction: rtl;
-            font-size: 20px;
-            line-height: 1.5;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Bakery</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* --- BASE STYLES --- */
+body { margin: 0; font-family: 'Cormorant Garamond', serif; color: white; background: black; direction: rtl; overflow-x: hidden; padding-bottom: 120px; }
+video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(8px) brightness(35%); z-index: -1; }
+
+/* --- NAVIGATION --- */
+.top-bar {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%); max-width: 1200px; width: 95%;
+  background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+  display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; z-index: 1000;
+  border-radius: 0 0 20px 20px; border-bottom: 1px solid rgba(212, 175, 55, 0.5);
+}
+.top-bar img { height: 50px; }
+.lang-toggle { background: #D4AF37; border: none; padding: 8px 18px; border-radius: 10px; cursor: pointer; font-weight: bold; color: black; }
+
+/* --- MENU CARDS --- */
+.top-menu-container { display: flex; flex-direction: column; align-items: center; margin: 120px 0 30px 0; gap: 25px; }
+.top-menu-card {
+  width: 320px; height: 200px; border-radius: 25px; overflow: hidden; cursor: pointer;
+  background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3);
+  display: flex; flex-direction: column; align-items: center; padding: 12px; transition: 0.3s;
+}
+.top-menu-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 18px; }
+.top-menu-card h2 { margin-top: 12px; font-size: 1.5rem; }
+
+/* --- SUBMENUS --- */
+.submenu {
+  display: none; max-width: 650px; width: 92%; margin: 0 auto 40px auto; padding: 20px;
+  background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(20px); border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.menu-items li {
+  list-style: none; margin: 20px 0; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 15px;
+}
+.thumb { width: 65px; height: 65px; object-fit: cover; border-radius: 12px; border: 1px solid #D4AF37; }
+
+/* --- CONTROLS --- */
+.item-info { flex-grow: 1; display: flex; flex-direction: column; }
+.qty-controls { display: flex; align-items: center; gap: 8px; }
+.qty-btn { background: rgba(212, 175, 55, 0.2); border: 1px solid #D4AF37; color: white; width: 28px; height: 28px; border-radius: 5px; cursor: pointer; }
+.qty-val { font-weight: bold; min-width: 20px; text-align: center; }
+
+/* --- CART BAR --- */
+#cart-bar {
+  position: fixed; bottom: 0; left: 0; width: 100%; background: #25D366; 
+  color: white; padding: 18px; display: none; justify-content: space-around; 
+  align-items: center; z-index: 2001; font-weight: bold; cursor: pointer;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+}
+
+#lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 9999; }
+#lightbox img { max-width: 85%; max-height: 80%; border-radius: 20px; border: 2px solid #D4AF37; }
+</style>
 </head>
 <body>
-    <div class="card">
-        <div class="icon">⚠️</div>
-        <div class="english">
-            <h2>Important</h2>
-            <p>If this page pops up, please close it and re-open the link again.</p>
+
+<video autoplay muted loop playsinline><source src="grandvideo.mp4" type="video/mp4"></video>
+
+<div class="top-bar">
+  <img src="logogrand.png" alt="Grand Bakery">
+  <button class="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+
+<div class="top-menu-container">
+  <div class="top-menu-card" onclick="toggleSubmenu('manakish-sub')"><img src="menu2.jpg"><h2 class="t-manakish">المناقيش</h2></div>
+  <div class="top-menu-card" onclick="toggleSubmenu('pastries-sub')"><img src="menu1.jpg"><h2 class="t-pastries">المعجنات</h2></div>
+  <div class="top-menu-card" onclick="toggleSubmenu('pida-sub')"><img src="pidamenu.jpg"><h2 class="t-pida">بيدا</h2></div>
+  <div class="top-menu-card" onclick="toggleSubmenu('pizza-sub')"><img src="pizza.jpg"><h2 class="t-pizza">البيتزا</h2></div>
+  <div class="top-menu-card" onclick="toggleSubmenu('bread-sub')"><img src="bread.jpg"><h2 class="t-bread">المخبوزات</h2></div>
+  <div class="top-menu-card" onclick="toggleSubmenu('sweets-sub')"><img src="cake.jpg"><h2 class="t-sweets">حلويات غربية</h2></div>
+  <div class="top-menu-card" onclick="toggleSubmenu('healthy-sub')"><img src="healthy.jpg"><h2 class="t-healthy">مناقيش صحية</h2></div>
+</div>
+
+<div class="submenu" id="manakish-sub">
+  <ul class="menu-items">
+    <li data-id="m1">
+        <img src="m1.jpg" class="thumb" onclick="openImg(event,this)">
+        <div class="item-info">
+            <span class="item-name" data-ar="زعتر" data-en="Thyme (Zaatar)">زعتر</span>
+            <span><span class="price">0.70</span> JD</span>
         </div>
-        <div class="divider"></div>
-        <div class="arabic">
-            <h2>هام</h2>
-            <p>إذا ظهرت لك هذه الصفحة، يرجى إغلاقها وفتح الرابط مرة أخرى.</p>
+        <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty('m1', -1)">-</button>
+            <span class="qty-val" id="q-m1">0</span>
+            <button class="qty-btn" onclick="changeQty('m1', 1)">+</button>
         </div>
-    </div>
+    </li>
+    <li data-id="m2"><img src="m2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="زعتر مع جبنة بيضاء" data-en="Zaatar & White Cheese">زعتر مع جبنة بيضاء</span><span><span class="price">1.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m2', -1)">-</button><span class="qty-val" id="q-m2">0</span><button class="qty-btn" onclick="changeQty('m2', 1)">+</button></div></li>
+    <li data-id="m3"><img src="m3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="لحمة بعجين" data-en="Meat Lahma Ba'jin">لحمة بعجين</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m3', -1)">-</button><span class="qty-val" id="q-m3">0</span><button class="qty-btn" onclick="changeQty('m3', 1)">+</button></div></li>
+    <li data-id="m4"><img src="m4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="لحمة بعجين مع بيض" data-en="Meat with Egg">لحمة بعجين مع بيض</span><span><span class="price">1.35</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m4', -1)">-</button><span class="qty-val" id="q-m4">0</span><button class="qty-btn" onclick="changeQty('m4', 1)">+</button></div></li>
+    <li data-id="m5"><img src="m5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="لحمة بعجين مع موزاريلا" data-en="Meat with Mozzarella">لحمة بعجين مع موزاريلا</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m5', -1)">-</button><span class="qty-val" id="q-m5">0</span><button class="qty-btn" onclick="changeQty('m5', 1)">+</button></div></li>
+    <li data-id="m6"><img src="m6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="لحمة بعجين مع محمرة" data-en="Meat with Muhammara">لحمة بعجين مع محمرة</span><span><span class="price">1.35</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m6', -1)">-</button><span class="qty-val" id="q-m6">0</span><button class="qty-btn" onclick="changeQty('m6', 1)">+</button></div></li>
+    <li data-id="m7"><img src="m7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة بيضاء" data-en="White Cheese">جبنة بيضاء</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m7', -1)">-</button><span class="qty-val" id="q-m7">0</span><button class="qty-btn" onclick="changeQty('m7', 1)">+</button></div></li>
+    <li data-id="m8"><img src="m8.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة شيدر" data-en="Cheddar Cheese">جبنة شيدر</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m8', -1)">-</button><span class="qty-val" id="q-m8">0</span><button class="qty-btn" onclick="changeQty('m8', 1)">+</button></div></li>
+    <li data-id="m9"><img src="m9.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة موزاريلا" data-en="Mozzarella Cheese">جبنة موزاريلا</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m9', -1)">-</button><span class="qty-val" id="q-m9">0</span><button class="qty-btn" onclick="changeQty('m9', 1)">+</button></div></li>
+    <li data-id="m10"><img src="m10.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مكس أجبان" data-en="Mixed Cheese">مكس أجبان</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m10', -1)">-</button><span class="qty-val" id="q-m10">0</span><button class="qty-btn" onclick="changeQty('m10', 1)">+</button></div></li>
+    <li data-id="m11"><img src="m11.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة موزاريلا مع نقانق" data-en="Mozzarella with Sausage">جبنة موزاريلا مع نقانق</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m11', -1)">-</button><span class="qty-val" id="q-m11">0</span><button class="qty-btn" onclick="changeQty('m11', 1)">+</button></div></li>
+    <li data-id="m12"><img src="m12.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة بيضاء مع زيتون" data-en="White Cheese with Olives">جبنة بيضاء مع زيتون</span><span><span class="price">1.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m12', -1)">-</button><span class="qty-val" id="q-m12">0</span><button class="qty-btn" onclick="changeQty('m12', 1)">+</button></div></li>
+    <li data-id="m13"><img src="m13.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة صفراء مع تيركي" data-en="Yellow Cheese & Turkey">جبنة صفراء مع تيركي</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m13', -1)">-</button><span class="qty-val" id="q-m13">0</span><button class="qty-btn" onclick="changeQty('m13', 1)">+</button></div></li>
+    <li data-id="m14"><img src="m14.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة موزاريلا مع تيركي" data-en="Mozzarella & Turkey">جبنة موزاريلا مع تيركي</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m14', -1)">-</button><span class="qty-val" id="q-m14">0</span><button class="qty-btn" onclick="changeQty('m14', 1)">+</button></div></li>
+    <li data-id="m15"><img src="m15.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="محمرة هندي حار" data-en="Spicy Indian Muhammara">محمرة هندي حار</span><span><span class="price">0.80</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m15', -1)">-</button><span class="qty-val" id="q-m15">0</span><button class="qty-btn" onclick="changeQty('m15', 1)">+</button></div></li>
+    <li data-id="m16"><img src="m16.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="محمرة مع بيض" data-en="Muhammara with Egg">محمرة مع بيض</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m16', -1)">-</button><span class="qty-val" id="q-m16">0</span><button class="qty-btn" onclick="changeQty('m16', 1)">+</button></div></li>
+    <li data-id="m17"><img src="m17.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="محمرة مع موزاريلا" data-en="Muhammara & Mozzarella">محمرة مع موزاريلا</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m17', -1)">-</button><span class="qty-val" id="q-m17">0</span><button class="qty-btn" onclick="changeQty('m17', 1)">+</button></div></li>
+    <li data-id="m18"><img src="m18.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="محمرة مع شيدر" data-en="Muhammara & Cheddar">محمرة مع شيدر</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m18', -1)">-</button><span class="qty-val" id="q-m18">0</span><button class="qty-btn" onclick="changeQty('m18', 1)">+</button></div></li>
+    <li data-id="m19"><img src="m19.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="محمرة مع زيتون" data-en="Muhammara with Olives">محمرة مع زيتون</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m19', -1)">-</button><span class="qty-val" id="q-m19">0</span><button class="qty-btn" onclick="changeQty('m19', 1)">+</button></div></li>
+    <li data-id="m20"><img src="m20.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيض" data-en="Plain Egg">بيض</span><span><span class="price">0.85</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m20', -1)">-</button><span class="qty-val" id="q-m20">0</span><button class="qty-btn" onclick="changeQty('m20', 1)">+</button></div></li>
+    <li data-id="m21"><img src="m21.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بطاطا" data-en="Potato">بطاطا</span><span><span class="price">0.85</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m21', -1)">-</button><span class="qty-val" id="q-m21">0</span><button class="qty-btn" onclick="changeQty('m21', 1)">+</button></div></li>
+    <li data-id="m22"><img src="m22.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بطاطا مع بيض" data-en="Potato with Egg">بطاطا مع بيض</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m22', -1)">-</button><span class="qty-val" id="q-m22">0</span><button class="qty-btn" onclick="changeQty('m22', 1)">+</button></div></li>
+    <li data-id="m23"><img src="m23.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بطاطا مع موزاريلا" data-en="Potato & Mozzarella">بطاطا مع موزاريلا</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m23', -1)">-</button><span class="qty-val" id="q-m23">0</span><button class="qty-btn" onclick="changeQty('m23', 1)">+</button></div></li>
+    <li data-id="m24"><img src="m24.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بطاطا مع محمرة" data-en="Potato & Muhammara">بطاطا مع محمرة</span><span><span class="price">1.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m24', -1)">-</button><span class="qty-val" id="q-m24">0</span><button class="qty-btn" onclick="changeQty('m24', 1)">+</button></div></li>
+    <li data-id="m25"><img src="m25.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة بيضاء مع بيض" data-en="White Cheese with Egg">جبنة بيضاء مع بيض</span><span><span class="price">1.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m25', -1)">-</button><span class="qty-val" id="q-m25">0</span><button class="qty-btn" onclick="changeQty('m25', 1)">+</button></div></li>
+    <li data-id="m26"><img src="m26.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة موزاريلا مع بيض" data-en="Mozzarella with Egg">جبنة موزاريلا مع بيض</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m26', -1)">-</button><span class="qty-val" id="q-m26">0</span><button class="qty-btn" onclick="changeQty('m26', 1)">+</button></div></li>
+    <li data-id="m27"><img src="m27.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة صفراء مع بيض" data-en="Yellow Cheese with Egg">جبنة صفراء مع بيض</span><span><span class="price">1.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m27', -1)">-</button><span class="qty-val" id="q-m27">0</span><button class="qty-btn" onclick="changeQty('m27', 1)">+</button></div></li>
+    <li data-id="m28"><img src="m28.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيض مع نقانق" data-en="Egg with Sausage">بيض مع نقانق</span><span><span class="price">1.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m28', -1)">-</button><span class="qty-val" id="q-m28">0</span><button class="qty-btn" onclick="changeQty('m28', 1)">+</button></div></li>
+    <li data-id="m29"><img src="m29.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيض اومليت مع خضار" data-en="Veggie Omelet">بيض اومليت مع خضار</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('m29', -1)">-</button><span class="qty-val" id="q-m29">0</span><button class="qty-btn" onclick="changeQty('m29', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div class="submenu" id="pastries-sub">
+  <ul class="menu-items">
+    <li data-id="b1"><img src="b1.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة بيضاء" data-en="White Cheese">جبنة بيضاء</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b1', -1)">-</button><span class="qty-val" id="q-b1">0</span><button class="qty-btn" onclick="changeQty('b1', 1)">+</button></div></li>
+    <li data-id="b2"><img src="b2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة صفراء" data-en="Yellow Cheese">جبنة صفراء</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b2', -1)">-</button><span class="qty-val" id="q-b2">0</span><button class="qty-btn" onclick="changeQty('b2', 1)">+</button></div></li>
+    <li data-id="b3"><img src="b3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بطاطا" data-en="Potato">بطاطا</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b3', -1)">-</button><span class="qty-val" id="q-b3">0</span><button class="qty-btn" onclick="changeQty('b3', 1)">+</button></div></li>
+    <li data-id="b4"><img src="b4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="نقانق" data-en="Sausage">نقانق</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b4', -1)">-</button><span class="qty-val" id="q-b4">0</span><button class="qty-btn" onclick="changeQty('b4', 1)">+</button></div></li>
+    <li data-id="b5"><img src="b5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="زعتر" data-en="Zaatar">زعتر</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b5', -1)">-</button><span class="qty-val" id="q-b5">0</span><button class="qty-btn" onclick="changeQty('b5', 1)">+</button></div></li>
+    <li data-id="b6"><img src="b6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="سبانخ" data-en="Spinach">سبانخ</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b6', -1)">-</button><span class="qty-val" id="q-b6">0</span><button class="qty-btn" onclick="changeQty('b6', 1)">+</button></div></li>
+    <li data-id="b7"><img src="b7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="سبانخ حار" data-en="Spicy Spinach">سبانخ حار</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b7', -1)">-</button><span class="qty-val" id="q-b7">0</span><button class="qty-btn" onclick="changeQty('b7', 1)">+</button></div></li>
+    <li data-id="b8"><img src="b8.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة وزعتر" data-en="Cheese & Zaatar">جبنة وزعتر</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b8', -1)">-</button><span class="qty-val" id="q-b8">0</span><button class="qty-btn" onclick="changeQty('b8', 1)">+</button></div></li>
+    <li data-id="b9"><img src="b9.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتزا" data-en="Mini Pizza">بيتزا</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b9', -1)">-</button><span class="qty-val" id="q-b9">0</span><button class="qty-btn" onclick="changeQty('b9', 1)">+</button></div></li>
+    <li data-id="b10"><img src="b10.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="زعتر ورق أخضر" data-en="Green Leaf Zaatar">زعتر ورق أخضر</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b10', -1)">-</button><span class="qty-val" id="q-b10">0</span><button class="qty-btn" onclick="changeQty('b10', 1)">+</button></div></li>
+    <li data-id="b11"><img src="b11.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="جبنة بوك" data-en="Puck Cheese">جبنة بوك</span><span><span class="price">0.30</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b11', -1)">-</button><span class="qty-val" id="q-b11">0</span><button class="qty-btn" onclick="changeQty('b11', 1)">+</button></div></li>
+    <li data-id="b12"><img src="b12.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="سمبوسك حارة" data-en="Spicy Sambousek">سمبوسك حارة</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b12', -1)">-</button><span class="qty-val" id="q-b12">0</span><button class="qty-btn" onclick="changeQty('b12', 1)">+</button></div></li>
+    <li data-id="b13"><img src="b13.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بورك لحمة" data-en="Meat Borek">بورك لحمة</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b13', -1)">-</button><span class="qty-val" id="q-b13">0</span><button class="qty-btn" onclick="changeQty('b13', 1)">+</button></div></li>
+    <li data-id="b14"><img src="b14.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بورك جبنة" data-en="Cheese Borek">بورك جبنة</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b14', -1)">-</button><span class="qty-val" id="q-b14">0</span><button class="qty-btn" onclick="changeQty('b14', 1)">+</button></div></li>
+    <li data-id="b15"><img src="b15.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كبة" data-en="Kibbeh">كبة</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b15', -1)">-</button><span class="qty-val" id="q-b15">0</span><button class="qty-btn" onclick="changeQty('b15', 1)">+</button></div></li>
+    <li data-id="b16"><img src="b16.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="موزاريلا مع تيركي" data-en="Mozzarella & Turkey">موزاريلا مع تيركي</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b16', -1)">-</button><span class="qty-val" id="q-b16">0</span><button class="qty-btn" onclick="changeQty('b16', 1)">+</button></div></li>
+    <li data-id="b17"><img src="b17.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="صفراء مع نقانق" data-en="Cheese & Sausage">صفراء مع نقانق</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b17', -1)">-</button><span class="qty-val" id="q-b17">0</span><button class="qty-btn" onclick="changeQty('b17', 1)">+</button></div></li>
+    <li data-id="b18"><img src="b18.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="زيتون مع جزر" data-en="Olives & Carrots">زيتون مع جزر</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b18', -1)">-</button><span class="qty-val" id="q-b18">0</span><button class="qty-btn" onclick="changeQty('b18', 1)">+</button></div></li>
+    <li data-id="b19"><img src="b19.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="سنيورة وتيركي" data-en="Sanyoura & Turkey">سنيورة وتيركي</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b19', -1)">-</button><span class="qty-val" id="q-b19">0</span><button class="qty-btn" onclick="changeQty('b19', 1)">+</button></div></li>
+    <li data-id="b20"><img src="b20.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="سنيورة وجبنة بوك" data-en="Sanyoura & Puck">سنيورة وجبنة بوك</span><span><span class="price">0.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('b20', -1)">-</button><span class="qty-val" id="q-b20">0</span><button class="qty-btn" onclick="changeQty('b20', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div class="submenu" id="pida-sub">
+  <ul class="menu-items">
+    <li data-id="p1"><img src="p1.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا زنجر" data-en="Zinger Pida">بيدا زنجر</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p1', -1)">-</button><span class="qty-val" id="q-p1">0</span><button class="qty-btn" onclick="changeQty('p1', 1)">+</button></div></li>
+    <li data-id="p2"><img src="p2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا سوبريم" data-en="Supreme Pida">بيدا سوبريم</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p2', -1)">-</button><span class="qty-val" id="q-p2">0</span><button class="qty-btn" onclick="changeQty('p2', 1)">+</button></div></li>
+    <li data-id="p3"><img src="p3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا باباروني" data-en="Pepperoni Pida">بيدا باباروني</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p3', -1)">-</button><span class="qty-val" id="q-p3">0</span><button class="qty-btn" onclick="changeQty('p3', 1)">+</button></div></li>
+    <li data-id="p4"><img src="p4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا دجاج باربكيو" data-en="BBQ Chicken Pida">بيدا دجاج باربكيو</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p4', -1)">-</button><span class="qty-val" id="q-p4">0</span><button class="qty-btn" onclick="changeQty('p4', 1)">+</button></div></li>
+    <li data-id="p5"><img src="p5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا دجاج فاهيتا" data-en="Fajita Chicken Pida">بيدا دجاج فاهيتا</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p5', -1)">-</button><span class="qty-val" id="q-p5">0</span><button class="qty-btn" onclick="changeQty('p5', 1)">+</button></div></li>
+    <li data-id="p6"><img src="p6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا جبنة بيضاء مع سبانخ" data-en="White Cheese & Spinach Pida">بيدا جبنة بيضاء مع سبانخ</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p6', -1)">-</button><span class="qty-val" id="q-p6">0</span><button class="qty-btn" onclick="changeQty('p6', 1)">+</button></div></li>
+    <li data-id="p7"><img src="p7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيدا دجاج البافلو الحار" data-en="Spicy Buffalo Chicken Pida">بيدا دجاج البافلو الحار</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('p7', -1)">-</button><span class="qty-val" id="q-p7">0</span><button class="qty-btn" onclick="changeQty('p7', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div class="submenu" id="pizza-sub">
+  <ul class="menu-items">
+    <li data-id="z1"><img src="z1.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتزا مكسيكان" data-en="Mexican Pizza">بيتزا مكسيكان</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z1', -1)">-</button><span class="qty-val" id="q-z1">0</span><button class="qty-btn" onclick="changeQty('z1', 1)">+</button></div></li>
+    <li data-id="z2"><img src="z2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتزا دجاج بالأناناس" data-en="Pineapple Chicken Pizza">بيتزا دجاج بالأناناس</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z2', -1)">-</button><span class="qty-val" id="q-z2">0</span><button class="qty-btn" onclick="changeQty('z2', 1)">+</button></div></li>
+    <li data-id="z3"><img src="z3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتزا دجاج بالريحان" data-en="Basil Chicken Pizza">بيتزا دجاج بالريحان</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z3', -1)">-</button><span class="qty-val" id="q-z3">0</span><button class="qty-btn" onclick="changeQty('z3', 1)">+</button></div></li>
+    <li data-id="z4"><img src="z4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتزا ماشروم" data-en="Mushroom Pizza">بيتزا ماشروم</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z4', -1)">-</button><span class="qty-val" id="q-z4">0</span><button class="qty-btn" onclick="changeQty('z4', 1)">+</button></div></li>
+    <li data-id="z5"><img src="z5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بافلو تشيكن بيتزا" data-en="Buffalo Chicken Pizza">بافلو تشيكن بيتزا</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z5', -1)">-</button><span class="qty-val" id="q-z5">0</span><button class="qty-btn" onclick="changeQty('z5', 1)">+</button></div></li>
+    <li data-id="z6"><img src="z6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="زنجر بيتزا" data-en="Zinger Pizza">زنجر بيتزا</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z6', -1)">-</button><span class="qty-val" id="q-z6">0</span><button class="qty-btn" onclick="changeQty('z6', 1)">+</button></div></li>
+    <li data-id="z7"><img src="z7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="تشيكن ألفريدو بيتزا" data-en="Chicken Alfredo Pizza">تشيكن ألفريدو بيتزا</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z7', -1)">-</button><span class="qty-val" id="q-z7">0</span><button class="qty-btn" onclick="changeQty('z7', 1)">+</button></div></li>
+    <li data-id="z8"><img src="z8.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="تشيكن باربيكيو بيتزا" data-en="Chicken BBQ Pizza">تشيكن باربيكيو بيتزا</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z8', -1)">-</button><span class="qty-val" id="q-z8">0</span><button class="qty-btn" onclick="changeQty('z8', 1)">+</button></div></li>
+    <li data-id="z9"><img src="z9.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="ببروني بيتزا" data-en="Pepperoni Pizza">ببروني بيتزا</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z9', -1)">-</button><span class="qty-val" id="q-z9">0</span><button class="qty-btn" onclick="changeQty('z9', 1)">+</button></div></li>
+    <li data-id="z10"><img src="z10.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتزا خضار" data-en="Vegetable Pizza">بيتزا خضار</span><span>M <span class="price">3.00</span> / L 3.50 JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('z10', -1)">-</button><span class="qty-val" id="q-z10">0</span><button class="qty-btn" onclick="changeQty('z10', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div class="submenu" id="bread-sub">
+  <ul class="menu-items">
+    <li data-id="k1"><img src="k1.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز بطاطا (4 قطع)" data-en="Potato Bread (4pcs)">خبز بطاطا (4 قطع)</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k1', -1)">-</button><span class="qty-val" id="q-k1">0</span><button class="qty-btn" onclick="changeQty('k1', 1)">+</button></div></li>
+    <li data-id="k2"><img src="k2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز برجر كبير (4 قطع)" data-en="Large Burger Bun (4pcs)">خبز برجر كبير (4 قطع)</span><span><span class="price">0.60</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k2', -1)">-</button><span class="qty-val" id="q-k2">0</span><button class="qty-btn" onclick="changeQty('k2', 1)">+</button></div></li>
+    <li data-id="k3"><img src="k3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز برجر وسط (4 قطع)" data-en="Medium Burger Bun (4pcs)">خبز برجر وسط (4 قطع)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k3', -1)">-</button><span class="qty-val" id="q-k3">0</span><button class="qty-btn" onclick="changeQty('k3', 1)">+</button></div></li>
+    <li data-id="k4"><img src="k4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز برجر بيبي (10 قطع)" data-en="Baby Burger Bun (10pcs)">خبز برجر بيبي (10 قطع)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k4', -1)">-</button><span class="qty-val" id="q-k4">0</span><button class="qty-btn" onclick="changeQty('k4', 1)">+</button></div></li>
+    <li data-id="k5"><img src="k5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="حمام بيبي (10 قطع)" data-en="Baby Hamam Bread (10pcs)">حمام بيبي (10 قطع)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k5', -1)">-</button><span class="qty-val" id="q-k5">0</span><button class="qty-btn" onclick="changeQty('k5', 1)">+</button></div></li>
+    <li data-id="k6"><img src="k6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="حمام فرنسي (4 قطع)" data-en="French Hamam (4pcs)">حمام فرنسي (4 قطع)</span><span><span class="price">0.60</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k6', -1)">-</button><span class="qty-val" id="q-k6">0</span><button class="qty-btn" onclick="changeQty('k6', 1)">+</button></div></li>
+    <li data-id="k7"><img src="k7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="حمام عادي (10 قطع)" data-en="Regular Hamam (10pcs)">حمام عادي (10 قطع)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k7', -1)">-</button><span class="qty-val" id="q-k7">0</span><button class="qty-btn" onclick="changeQty('k7', 1)">+</button></div></li>
+    <li data-id="k8"><img src="k8.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="برجر أسمر (4 قطع)" data-en="Brown Burger Bun (4pcs)">برجر أسمر (4 قطع)</span><span><span class="price">0.80</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k8', -1)">-</button><span class="qty-val" id="q-k8">0</span><button class="qty-btn" onclick="changeQty('k8', 1)">+</button></div></li>
+    <li data-id="k9"><img src="k9.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="حمام أسمر بيبي (10 قطع)" data-en="Brown Baby Hamam (10pcs)">حمام أسمر بيبي (10 قطع)</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k9', -1)">-</button><span class="qty-val" id="q-k9">0</span><button class="qty-btn" onclick="changeQty('k9', 1)">+</button></div></li>
+    <li data-id="k10"><img src="k10.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كعك قدسي (قطعتين)" data-en="Jerusalem Kaak (2pcs)">كعك قدسي (قطعتين)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k10', -1)">-</button><span class="qty-val" id="q-k10">0</span><button class="qty-btn" onclick="changeQty('k10', 1)">+</button></div></li>
+    <li data-id="k11"><img src="k11.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز لبناني (1.250 كيلو)" data-en="Lebanese Bread (1.250kg)">خبز لبناني (1.250 كيلو)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k11', -1)">-</button><span class="qty-val" id="q-k11">0</span><button class="qty-btn" onclick="changeQty('k11', 1)">+</button></div></li>
+    <li data-id="k12"><img src="k12.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز كماج (1.250 كيلو)" data-en="Komaj Bread (1.250kg)">خبز كماج (1.250 كيلو)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k12', -1)">-</button><span class="qty-val" id="q-k12">0</span><button class="qty-btn" onclick="changeQty('k12', 1)">+</button></div></li>
+    <li data-id="k13"><img src="k13.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز طابون أبيض (5 أرغفة)" data-en="White Taboon Bread (5pcs)">خبز طابون أبيض (5 أرغفة)</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k13', -1)">-</button><span class="qty-val" id="q-k13">0</span><button class="qty-btn" onclick="changeQty('k13', 1)">+</button></div></li>
+    <li data-id="k14"><img src="k14.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="خبز طابون أسمر" data-en="Brown Taboon Bread">خبز طابون أسمر</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('k14', -1)">-</button><span class="qty-val" id="q-k14">0</span><button class="qty-btn" onclick="changeQty('k14', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div class="submenu" id="sweets-sub">
+  <ul class="menu-items">
+    <li data-id="d1"><img src="d1.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="تارت فراولة كبير" data-en="Large Strawberry Tart">تارت فراولة كبير</span><span><span class="price">4.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d1', -1)">-</button><span class="qty-val" id="q-d1">0</span><button class="qty-btn" onclick="changeQty('d1', 1)">+</button></div></li>
+    <li data-id="d2"><img src="d2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="تارت فراولة صغير" data-en="Small Strawberry Tart">تارت فراولة صغير</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d2', -1)">-</button><span class="qty-val" id="q-d2">0</span><button class="qty-btn" onclick="changeQty('d2', 1)">+</button></div></li>
+    <li data-id="d3"><img src="d3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="إكلير كبير" data-en="Large Eclair">إكلير كبير</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d3', -1)">-</button><span class="qty-val" id="q-d3">0</span><button class="qty-btn" onclick="changeQty('d3', 1)">+</button></div></li>
+    <li data-id="d4"><img src="d4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="إكلير صغير" data-en="Small Eclair">إكلير صغير</span><span><span class="price">0.75</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d4', -1)">-</button><span class="qty-val" id="q-d4">0</span><button class="qty-btn" onclick="changeQty('d4', 1)">+</button></div></li>
+    <li data-id="d5"><img src="d5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قطع تشيز كيك" data-en="Cheesecake Slices">قطع تشيز كيك</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d5', -1)">-</button><span class="qty-val" id="q-d5">0</span><button class="qty-btn" onclick="changeQty('d5', 1)">+</button></div></li>
+    <li data-id="d6"><img src="d6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قطع تشيز كيك مخبوز" data-en="Baked Cheesecake Slices">قطع تشيز كيك مخبوز</span><span><span class="price">1.75</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d6', -1)">-</button><span class="qty-val" id="q-d6">0</span><button class="qty-btn" onclick="changeQty('d6', 1)">+</button></div></li>
+    <li data-id="d7"><img src="d7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قطع كيك سان سيباستيان" data-en="San Sebastian Slices">قطع كيك سان سيباستيان</span><span><span class="price">1.75</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d7', -1)">-</button><span class="qty-val" id="q-d7">0</span><button class="qty-btn" onclick="changeQty('d7', 1)">+</button></div></li>
+    <li data-id="d8"><img src="d8.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قالب مافن كيك" data-en="Muffin Cake Mold">قالب مافن كيك</span><span><span class="price">2.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d8', -1)">-</button><span class="qty-val" id="q-d8">0</span><button class="qty-btn" onclick="changeQty('d8', 1)">+</button></div></li>
+    <li data-id="d9"><img src="d9.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="أكواب مافن كيك كبيرة" data-en="Large Muffin Cup">أكواب مافن كيك كبيرة</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d9', -1)">-</button><span class="qty-val" id="q-d9">0</span><button class="qty-btn" onclick="changeQty('d9', 1)">+</button></div></li>
+    <li data-id="d10"><img src="d10.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مافن كيك صغير" data-en="Small Muffin Cake">مافن كيك صغير</span><span><span class="price">0.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d10', -1)">-</button><span class="qty-val" id="q-d10">0</span><button class="qty-btn" onclick="changeQty('d10', 1)">+</button></div></li>
+    <li data-id="d11"><img src="d11.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قطع براونيز كيك" data-en="Brownies Slices">قطع براونيز كيك</span><span><span class="price">0.75</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d11', -1)">-</button><span class="qty-val" id="q-d11">0</span><button class="qty-btn" onclick="changeQty('d11', 1)">+</button></div></li>
+    <li data-id="d12"><img src="d12.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="أكواب براونيز كيك" data-en="Brownies Cup">أكواب براونيز كيك</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d12', -1)">-</button><span class="qty-val" id="q-d12">0</span><button class="qty-btn" onclick="changeQty('d12', 1)">+</button></div></li>
+    <li data-id="d13"><img src="d13.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قطع كيك" data-en="Cake Slices">قطع كيك</span><span><span class="price">1.25</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d13', -1)">-</button><span class="qty-val" id="q-d13">0</span><button class="qty-btn" onclick="changeQty('d13', 1)">+</button></div></li>
+    <li data-id="d14"><img src="d14.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="فطيرة تفاح" data-en="Apple Pie">فطيرة تفاح</span><span><span class="price">5.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d14', -1)">-</button><span class="qty-val" id="q-d14">0</span><button class="qty-btn" onclick="changeQty('d14', 1)">+</button></div></li>
+    <li data-id="d15"><img src="d15.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="فطيرة بيكان" data-en="Pecan Pie">فطيرة بيكان</span><span><span class="price">5.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d15', -1)">-</button><span class="qty-val" id="q-d15">0</span><button class="qty-btn" onclick="changeQty('d15', 1)">+</button></div></li>
+    <li data-id="d16"><img src="d16.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كوكيز باي مع نوتيلا" data-en="Nutella Cookies Pie">كوكيز باي مع نوتيلا</span><span><span class="price">5.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d16', -1)">-</button><span class="qty-val" id="q-d16">0</span><button class="qty-btn" onclick="changeQty('d16', 1)">+</button></div></li>
+    <li data-id="d17"><img src="d17.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="بيتيفور (للكيلو)" data-en="Petit Fours (per kg)">بيتيفور (للكيلو)</span><span><span class="price">10.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d17', -1)">-</button><span class="qty-val" id="q-d17">0</span><button class="qty-btn" onclick="changeQty('d17', 1)">+</button></div></li>
+    <li data-id="d18"><img src="d18.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="قطع ليزي كيك" data-en="Lazy Cake Slices">قطع ليزي كيك</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d18', -1)">-</button><span class="qty-val" id="q-d18">0</span><button class="qty-btn" onclick="changeQty('d18', 1)">+</button></div></li>
+    <li data-id="d19"><img src="d19.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كيك عيد ميلاد صغير" data-en="Small Birthday Cake">كيك عيد ميلاد صغير</span><span><span class="price">8.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d19', -1)">-</button><span class="qty-val" id="q-d19">0</span><button class="qty-btn" onclick="changeQty('d19', 1)">+</button></div></li>
+    <li data-id="d20"><img src="d20.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كيك عيد ميلاد وسط" data-en="Medium Birthday Cake">كيك عيد ميلاد وسط</span><span><span class="price">10.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d20', -1)">-</button><span class="qty-val" id="q-d20">0</span><button class="qty-btn" onclick="changeQty('d20', 1)">+</button></div></li>
+    <li data-id="d21"><img src="d21.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كيك عيد ميلاد كبير" data-en="Large Birthday Cake">كيك عيد ميلاد كبير</span><span><span class="price">12.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d21', -1)">-</button><span class="qty-val" id="q-d21">0</span><button class="qty-btn" onclick="changeQty('d21', 1)">+</button></div></li>
+    <li data-id="d22"><img src="d22.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="كيك عيد ميلاد خاص" data-en="Special Birthday Cake">كيك عيد ميلاد خاص</span><span><span class="price">15.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d22', -1)">-</button><span class="qty-val" id="q-d22">0</span><button class="qty-btn" onclick="changeQty('d22', 1)">+</button></div></li>
+    <li data-id="d23"><img src="d23.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="إنجلش كيك" data-en="English Cake">إنجلش كيك</span><span><span class="price">3.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('d23', -1)">-</button><span class="qty-val" id="q-d23">0</span><button class="qty-btn" onclick="changeQty('d23', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div class="submenu" id="healthy-sub">
+  <ul class="menu-items">
+    <li data-id="h1"><img src="h1.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش جبنة بيضاء" data-en="Healthy White Cheese">مناقيش جبنة بيضاء</span><span><span class="price">1.20</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h1', -1)">-</button><span class="qty-val" id="q-h1">0</span><button class="qty-btn" onclick="changeQty('h1', 1)">+</button></div></li>
+    <li data-id="h2"><img src="h2.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش زعتر" data-en="Healthy Zaatar">مناقيش زعتر</span><span><span class="price">0.90</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h2', -1)">-</button><span class="qty-val" id="q-h2">0</span><button class="qty-btn" onclick="changeQty('h2', 1)">+</button></div></li>
+    <li data-id="h3"><img src="h3.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش بيض" data-en="Healthy Egg">مناقيش بيض</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h3', -1)">-</button><span class="qty-val" id="q-h3">0</span><button class="qty-btn" onclick="changeQty('h3', 1)">+</button></div></li>
+    <li data-id="h4"><img src="h4.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش جبنة مع زعتر" data-en="Cheese & Zaatar">مناقيش جبنة مع زعتر</span><span><span class="price">1.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h4', -1)">-</button><span class="qty-val" id="q-h4">0</span><button class="qty-btn" onclick="changeQty('h4', 1)">+</button></div></li>
+    <li data-id="h5"><img src="h5.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش جبنة مع بيض" data-en="Cheese & Egg">مناقيش جبنة مع بيض</span><span><span class="price">1.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h5', -1)">-</button><span class="qty-val" id="q-h5">0</span><button class="qty-btn" onclick="changeQty('h5', 1)">+</button></div></li>
+    <li data-id="h6"><img src="h6.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش محمرة" data-en="Healthy Muhammara">مناقيش محمرة</span><span><span class="price">1.00</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h6', -1)">-</button><span class="qty-val" id="q-h6">0</span><button class="qty-btn" onclick="changeQty('h6', 1)">+</button></div></li>
+    <li data-id="h7"><img src="h7.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش محمرة مع موزاريلا" data-en="Muhammara & Mozzarella">مناقيش محمرة مع موزاريلا</span><span><span class="price">1.70</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h7', -1)">-</button><span class="qty-val" id="q-h7">0</span><button class="qty-btn" onclick="changeQty('h7', 1)">+</button></div></li>
+    <li data-id="h8"><img src="h8.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش بيض مع نقانق" data-en="Egg & Sausage">مناقيش بيض مع نقانق</span><span><span class="price">1.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h8', -1)">-</button><span class="qty-val" id="q-h8">0</span><button class="qty-btn" onclick="changeQty('h8', 1)">+</button></div></li>
+    <li data-id="h9"><img src="h9.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش جبنة صفراء" data-en="Healthy Yellow Cheese">مناقيش جبنة صفراء</span><span><span class="price">1.40</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h9', -1)">-</button><span class="qty-val" id="q-h9">0</span><button class="qty-btn" onclick="changeQty('h9', 1)">+</button></div></li>
+    <li data-id="h10"><img src="h10.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش جبنة صفراء مع بيض" data-en="Cheese & Egg">مناقيش جبنة صفراء مع بيض</span><span><span class="price">1.70</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h10', -1)">-</button><span class="qty-val" id="q-h10">0</span><button class="qty-btn" onclick="changeQty('h10', 1)">+</button></div></li>
+    <li data-id="h11"><img src="h11.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش مكس أجبان" data-en="Mixed Cheese">مناقيش مكس أجبان</span><span><span class="price">1.70</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h11', -1)">-</button><span class="qty-val" id="q-h11">0</span><button class="qty-btn" onclick="changeQty('h11', 1)">+</button></div></li>
+    <li data-id="h12"><img src="h12.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش موزاريلا مع تيركي" data-en="Mozzarella & Turkey">مناقيش موزاريلا مع تيركي</span><span><span class="price">1.70</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h12', -1)">-</button><span class="qty-val" id="q-h12">0</span><button class="qty-btn" onclick="changeQty('h12', 1)">+</button></div></li>
+    <li data-id="h13"><img src="h13.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش بيض مع سلامي" data-en="Egg & Salami">مناقيش بيض مع سلامي</span><span><span class="price">1.75</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h13', -1)">-</button><span class="qty-val" id="q-h13">0</span><button class="qty-btn" onclick="changeQty('h13', 1)">+</button></div></li>
+    <li data-id="h14"><img src="h14.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="مناقيش محمرة مع بيض (شكشوكة)" data-en="Shakshuka Muhammara">مناقيش محمرة مع بيض (شكشوكة)</span><span><span class="price">1.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h14', -1)">-</button><span class="qty-val" id="q-h14">0</span><button class="qty-btn" onclick="changeQty('h14', 1)">+</button></div></li>
+    <li data-id="h15"><img src="h15.jpg" class="thumb" onclick="openImg(event,this)"><div class="item-info"><span class="item-name" data-ar="معجنات قمح الحبة الكاملة" data-en="Whole Wheat Pastries">معجنات قمح الحبة الكاملة</span><span><span class="price">0.50</span> JD</span></div><div class="qty-controls"><button class="qty-btn" onclick="changeQty('h15', -1)">-</button><span class="qty-val" id="q-h15">0</span><button class="qty-btn" onclick="changeQty('h15', 1)">+</button></div></li>
+  </ul>
+</div>
+
+<div id="cart-bar" onclick="sendOrder()">
+    <span id="cart-text">إرسال الطلب عبر الواتساب</span>
+    <span id="cart-total">0.00 JD</span>
+</div>
+
+<div id="lightbox" onclick="closeImg()"><img id="lightbox-img"></div>
+
+<script>
+let cart = {};
+
+function toggleLang() {
+  const isCurrentlyAr = document.documentElement.lang === "ar";
+  const newLang = isCurrentlyAr ? "en" : "ar";
+  document.documentElement.lang = newLang;
+  document.body.style.direction = newLang === "ar" ? "rtl" : "ltr";
+  document.querySelector(".lang-toggle").innerText = newLang === "ar" ? "EN" : "AR";
+  document.getElementById("cart-text").innerText = newLang === "ar" ? "إرسال الطلب عبر الواتساب" : "Send Order via WhatsApp";
+  document.querySelectorAll(".item-name").forEach(el => el.innerText = el.getAttribute(`data-${newLang}`));
+}
+
+function changeQty(id, delta) {
+    if (!cart[id]) {
+        const row = document.querySelector(`[data-id="${id}"]`);
+        cart[id] = {
+            qty: 0,
+            price: parseFloat(row.querySelector(".price").innerText),
+            nameAr: row.querySelector(".item-name").getAttribute("data-ar"),
+            nameEn: row.querySelector(".item-name").getAttribute("data-en")
+        };
+    }
+    cart[id].qty = Math.max(0, cart[id].qty + delta);
+    document.getElementById(`q-${id}`).innerText = cart[id].qty;
+    updateCartUI();
+}
+
+function updateCartUI() {
+    let total = 0;
+    let hasItems = false;
+    for (let id in cart) {
+        total += cart[id].qty * cart[id].price;
+        if (cart[id].qty > 0) hasItems = true;
+    }
+    const bar = document.getElementById("cart-bar");
+    bar.style.display = hasItems ? "flex" : "none";
+    document.getElementById("cart-total").innerText = total.toFixed(2) + " JD";
+}
+
+function sendOrder() {
+    const lang = document.documentElement.lang;
+    let message = lang === 'ar' ? "*طلب جديد من Grand Bakery*%0A%0A" : "*New Order from Grand Bakery*%0A%0A";
+    let grandTotal = 0;
+
+    for (let id in cart) {
+        if (cart[id].qty > 0) {
+            let name = lang === 'ar' ? cart[id].nameAr : cart[id].nameEn;
+            let lineTotal = cart[id].qty * cart[id].price;
+            message += `• ${name} [x${cart[id].qty}] = ${lineTotal.toFixed(2)} JD%0A`;
+            grandTotal += lineTotal;
+        }
+    }
+
+    message += `%0A*Total: ${grandTotal.toFixed(2)} JD*`;
+    window.open(`https://wa.me/962782647590?text=${message}`, '_blank');
+}
+
+function toggleSubmenu(id) {
+  const target = document.getElementById(id);
+  document.querySelectorAll('.submenu').forEach(s => { if(s.id !== id) s.style.display = 'none'; });
+  target.style.display = target.style.display === 'block' ? 'none' : 'block';
+  if(target.style.display === 'block') target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function openImg(e, img) { e.stopPropagation(); document.getElementById("lightbox").style.display = "flex"; document.getElementById("lightbox-img").src = img.src; }
+function closeImg() { document.getElementById("lightbox").style.display = "none"; }
+</script>
+
 </body>
 </html>
