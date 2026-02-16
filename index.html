@@ -52,6 +52,33 @@ video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit:
 #install-notif button { background: black; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer; }
 
 @keyframes zoom { from{transform:scale(.85); opacity:0;} to{transform:scale(1); opacity:1;} }
+  #install-notif { 
+  position: fixed; 
+  bottom: 25px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  background: #D4AF37; 
+  color: black; 
+  padding: 18px; 
+  border-radius: 20px; 
+  display: none; /* Hidden by default */
+  flex-direction: column; 
+  gap: 12px; 
+  z-index: 2000; 
+  width: 290px; 
+  text-align: center; 
+  font-weight: bold; 
+}
+
+#install-notif button { 
+  background: black; 
+  color: white; 
+  border: none; 
+  padding: 10px; 
+  border-radius: 10px; 
+  cursor: pointer; 
+}
+
 </style>
 </head>
 <body>
@@ -276,6 +303,7 @@ video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit:
 </div>
 
 <script>
+  
 const uiText = {
   ar: { 
     pastries: "المعجنات", manakish: "المناقيش", healthy: "مناقيش صحية", pida: "بيدا", 
@@ -328,47 +356,39 @@ function closeImg() { document.getElementById("lightbox").style.display = "none"
 
 let deferredPrompt;
 
-// 1. Capture the system prompt
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('install-notif').style.display = 'flex';
+// Listen for the browser's install prompt request
+window.addEventListener('beforeinstallprompt', (e) => { 
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault(); 
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e; 
+  // Show the custom install notification
+  document.getElementById('install-notif').style.display = 'flex'; 
 });
 
-// 2. Auto-show the banner after 3 seconds
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    // Show only if the user hasn't already closed it this session
-    if (!sessionStorage.getItem('installDismissed')) {
-      document.getElementById('install-notif').style.display = 'flex';
-    }
-  }, 3000);
-});
-
-async function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
+async function installApp() { 
+  if (deferredPrompt) { 
+    // Show the browser's install prompt
+    deferredPrompt.prompt(); 
+    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
+    // We've used the prompt, and can't use it again, throw it away
+    deferredPrompt = null; 
     closeNotif();
-  } else {
-    // Fallback for iOS or non-supported browsers
-    const isAr = document.documentElement.lang === "ar";
-    alert(isAr ? "للتثبيت: اضغط على زر المشاركة ثم 'إضافة إلى الشاشة الرئيسية'" : "To install: Tap the share button and select 'Add to Home Screen'");
-    closeNotif();
-  }
+  } else { 
+    // Fallback if the browser doesn't support the prompt or it's already installed
+    alert("Use Browser Menu -> Add to Home Screen"); 
+  } 
 }
 
-function closeNotif() {
-  document.getElementById('install-notif').style.display = 'none';
-  sessionStorage.setItem('installDismissed', 'true');
+function closeNotif() { 
+  document.getElementById('install-notif').style.display = 'none'; 
 }
-
 </script>
-  <div id="install-notif" style="position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #D4AF37; color: black; padding: 18px; border-radius: 20px; display: none; flex-direction: column; gap: 12px; z-index: 2000; width: 290px; text-align: center; font-weight: bold; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+  <div id="install-notif">
   <span id="install-text">تثبيت الموقع على الشاشة الرئيسية</span>
-  <button onclick="installApp()" style="background: black; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">تثبيت الآن</button>
-  <button onclick="closeNotif()" style="background:none; color:black; font-size: 0.8rem; border:none; cursor:pointer;">إغلاق</button>
+  <button onclick="installApp()">تثبيت الآن</button>
+  <button onclick="closeNotif()" style="background:none; color:black; font-size: 0.8rem;">إغلاق</button>
 </div>
 
 </body>
