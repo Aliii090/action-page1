@@ -327,40 +327,41 @@ function openImg(e, img) { e.stopPropagation(); document.getElementById("lightbo
 function closeImg() { document.getElementById("lightbox").style.display = "none"; }
 
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-notif').style.display = 'flex'; });
-async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } else { alert("Use Browser Menu -> Add to Home Screen"); } }
-function closeNotif() { document.getElementById('install-notif').style.display = 'none'; }
-  let deferredPrompt;
 
-// Capture the official install event
+// 1. Capture the system prompt
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   document.getElementById('install-notif').style.display = 'flex';
 });
 
-// Force show the notification after 3 seconds as a reminder
-window.onload = () => {
+// 2. Auto-show the banner after 3 seconds
+window.addEventListener('load', () => {
   setTimeout(() => {
-    if (document.getElementById('install-notif').style.display !== 'flex') {
+    // Show only if the user hasn't already closed it this session
+    if (!sessionStorage.getItem('installDismissed')) {
       document.getElementById('install-notif').style.display = 'flex';
     }
-  }, 3000); 
-};
+  }, 3000);
+});
 
 async function installApp() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
     deferredPrompt = null;
+    closeNotif();
   } else {
+    // Fallback for iOS or non-supported browsers
     const isAr = document.documentElement.lang === "ar";
-    alert(isAr ? "للتثبيت: اضغط على زر المشاركة ثم 'إضافة إلى الشاشة الرئيسية'" : "To install: Tap the browser menu/share button and select 'Add to Home Screen'");
+    alert(isAr ? "للتثبيت: اضغط على زر المشاركة ثم 'إضافة إلى الشاشة الرئيسية'" : "To install: Tap the share button and select 'Add to Home Screen'");
+    closeNotif();
   }
-  closeNotif();
 }
 
 function closeNotif() {
   document.getElementById('install-notif').style.display = 'none';
+  sessionStorage.setItem('installDismissed', 'true');
 }
 
 </script>
