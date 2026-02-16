@@ -1,22 +1,15 @@
 {
-  "short_name": "Grand Bakery",
-  "name": "Grand Bakery & Pastries",
-  "icons": [
-    {
-      "src": "logogrand.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "logogrand.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#000000",
-  "dir": "rtl",
-  "lang": "ar"
+"name": "Grand Bakery",
+"short_name": "Grand Bakery",
+"start_url": ".",
+"display": "standalone",
+"background_color": "#1C1C1C",
+"theme_color": "#1C1C1C",
+"icons": [
+{
+"src": "logogrand.png",
+"sizes": "192x192",
+"type": "image/png"
+}
+]
 }
